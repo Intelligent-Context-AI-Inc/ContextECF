@@ -1,43 +1,22 @@
-# Dependencies
-node_modules/
-**/node_modules/
-
-# Build artifacts
-**/dist/
-**/src/**/*.js
-**/src/**/*.js.map
-**/src/**/*.d.ts
-*.tsbuildinfo
-
-# Compiled vite configs
-**/vite.config.js
-**/vite.config.d.ts
-
-# Test coverage & reports
-**/coverage/
-coverage/
-test-reports/
-
-# Release artifacts
-artifacts/
-
 # Environment files (secrets)
 .env
 .env.local
 .env.*.local
+*.env
+!.env.example
 
-# OS files
+# License files (sensitive)
+license.jwt
+license-public.pem
+internal-auth.key
+
+# OS artifacts
 .DS_Store
 Thumbs.db
 
-# IDE
-.idea/
+# Editor files
 .vscode/
-*.swp
-*.swo
+.idea/
 
-# Internal tooling (not for public repo)
-.codeledger/
-.claude/
-.code-review-state.json
-.agent-guardrails.md
+# Docker volumes
+data/

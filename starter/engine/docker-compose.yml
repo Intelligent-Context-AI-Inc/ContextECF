@@ -1,0 +1,196 @@
+# ContextECF Fabric Starter — Docker Compose
+# This file orchestrates the minimal set of services required for evaluation.
+# Images are pulled from a private registry. See README.md for setup instructions.
+
+services:
+  # --- Infrastructure ---
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: contextecf
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: contextecf_control
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U contextecf -d contextecf_control"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Init Container: Database Migrations ---
+
+  db-migrate:
+    image: ${REGISTRY}/contextecf-api-gateway:${FABRIC_VERSION}
+    entrypoint: ["node", "packages/database/dist/runner.js", "up"]
+    environment:
+      DATABASE_URL: postgresql://contextecf:${POSTGRES_PASSWORD}@postgres:5432/contextecf_control
+      LOG_LEVEL: warn
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # --- Core Services ---
+
+  auth:
+    image: ${REGISTRY}/contextecf-auth:${FABRIC_VERSION}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      # SECURITY: AUTH_ALLOW_DEV_MODE intentionally omitted.
+      # The auth service provides its own JWKS endpoint for token verification.
+      # Setting AUTH_ALLOW_DEV_MODE=true would disable JWT signature validation.
+      DATABASE_URL: postgresql://contextecf:${POSTGRES_PASSWORD}@postgres:5432/contextecf_control
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health/live"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  api-gateway:
+    image: ${REGISTRY}/contextecf-api-gateway:${FABRIC_VERSION}
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: development
+      PORT: "8080"
+      AUTH_JWKS_URL: http://auth:8080/.well-known/jwks.json
+      AUTH_SERVICE_URL: http://auth:8080
+      POLICY_SERVICE_URL: http://policy:8080
+      AUDIT_SERVICE_URL: http://audit:8080
+      DATABASE_URL: postgresql://contextecf:${POSTGRES_PASSWORD}@postgres:5432/contextecf_control
+      REDIS_URL: redis://redis:6379
+      LICENSE_FILE_PATH: /opt/fabric/manifests/license.jwt
+    volumes:
+      - ../manifests:/opt/fabric/manifests:ro
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health/live"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  policy:
+    image: ${REGISTRY}/contextecf-policy:${FABRIC_VERSION}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://contextecf:${POSTGRES_PASSWORD}@postgres:5432/contextecf_control
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health/live"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  entitlements:
+    image: ${REGISTRY}/contextecf-entitlements:${FABRIC_VERSION}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: "8089"
+      DATABASE_URL: postgresql://contextecf:${POSTGRES_PASSWORD}@postgres:5432/contextecf_control
+      REDIS_URL: redis://redis:6379
+      LICENSE_FILE_PATH: /opt/fabric/manifests/license.jwt
+    volumes:
+      - ../manifests:/opt/fabric/manifests:ro
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8089/health/live"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  audit:
+    image: ${REGISTRY}/contextecf-audit:${FABRIC_VERSION}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://contextecf:${POSTGRES_PASSWORD}@postgres:5432/contextecf_control
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health/live"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  connector-gateway:
+    image: ${REGISTRY}/contextecf-connector-gateway:${FABRIC_VERSION}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: "8090"
+      AUTH_JWKS_URL: http://auth:8080/.well-known/jwks.json
+      DATABASE_URL: postgresql://contextecf:${POSTGRES_PASSWORD}@postgres:5432/contextecf_control
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8090/health/live"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  admin-console:
+    image: ${REGISTRY}/contextecf-admin-console:${FABRIC_VERSION}
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  pgdata:

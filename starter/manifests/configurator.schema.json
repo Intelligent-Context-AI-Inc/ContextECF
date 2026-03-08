@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ContextECF Fabric Starter Manifest",
+  "description": "Enterprise-approved configuration for local Fabric evaluation. Only documented fields are accepted.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "The target Fabric version.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "api_port": {
+          "type": "integer",
+          "default": 8080,
+          "minimum": 1024,
+          "maximum": 65535,
+          "description": "External port for the API Gateway."
+        },
+        "admin_port": {
+          "type": "integer",
+          "default": 3000,
+          "minimum": 1024,
+          "maximum": 65535,
+          "description": "External port for the Admin Console."
+        },
+        "allow_dev_mode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allows services to start with trial JWKS during evaluation. Deprecated in Subscribe phase."
+        }
+      },
+      "required": ["api_port", "admin_port"]
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file_path": {
+          "type": "string",
+          "default": "/opt/fabric/manifests/license.jwt",
+          "description": "Path to the license file inside the container."
+        }
+      }
+    }
+  },
+  "required": ["version", "network"]
+}

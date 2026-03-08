@@ -1,0 +1,102 @@
+# Network Policy for ContextECF On-Prem
+# Restricts Agent API access based on ingress mode:
+#   internal_only  — Only pods within the contextecf namespace
+#   private_link   — Only traffic from configured CIDRs
+#   public         — All traffic (use with caution)
+
+# -- Default policy: deny all ingress to contextecf pods
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: contextecf-default-deny
+  namespace: {{ include "contextecf.namespace" . }}
+  labels:
+    {{- include "contextecf.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: contextecf
+  policyTypes:
+    - Ingress
+
+# -- Allow inter-service communication within the namespace
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: contextecf-internal
+  namespace: {{ include "contextecf.namespace" . }}
+  labels:
+    {{- include "contextecf.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: contextecf
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ include "contextecf.namespace" . }}
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: contextecf
+
+{{- if eq .Values.ingress.mode "internal_only" }}
+# -- internal_only: Only allow ingress from within the namespace.
+# No additional policy needed — the default deny + internal policy above
+# restricts all external access.
+{{- end }}
+
+{{- if eq .Values.ingress.mode "private_link" }}
+# -- private_link: Allow ingress from configured CIDRs only.
+# Used for VPN, PrivateLink, or peered network access.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: contextecf-private-link
+  namespace: {{ include "contextecf.namespace" . }}
+  labels:
+    {{- include "contextecf.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: api-gateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      {{- range .Values.ingress.allowedCidrs }}
+        - ipBlock:
+            cidr: {{ . | quote }}
+      {{- end }}
+      ports:
+        - port: 8080
+          protocol: TCP
+{{- end }}
+
+{{- if eq .Values.ingress.mode "public" }}
+# -- public: Allow all ingress to the API gateway.
+# WARNING: Use only with additional security layers (WAF, Cloud Armor, etc.)
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: contextecf-public-ingress
+  namespace: {{ include "contextecf.namespace" . }}
+  labels:
+    {{- include "contextecf.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: api-gateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 8080
+          protocol: TCP
+{{- end }}

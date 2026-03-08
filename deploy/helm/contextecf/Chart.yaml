@@ -1,0 +1,13 @@
+apiVersion: v2
+name: contextecf
+description: ContextECF RPaaS — On-Prem Helm Chart for agent-enabled services
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - contextecf
+  - rpaas
+  - agent-api
+  - on-prem
+maintainers:
+  - name: ContextECF Team

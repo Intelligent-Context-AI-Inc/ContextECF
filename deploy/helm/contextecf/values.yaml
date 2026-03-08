@@ -1,0 +1,188 @@
+# ContextECF On-Prem Helm Values
+# Default configuration for on-prem deployment of agent-enabled services.
+# All secrets use secretref:/kmsref: patterns — never embed real values here.
+
+# -- Global settings applied to all services
+global:
+  tenantId: ""
+  tenantName: ""
+  environment: "prod"
+  region: ""
+  deploymentModel: "on_prem"
+  imageRegistry: "contextecf"
+  imageTag: "latest"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+# -- Namespace for the deployment (created if createNamespace is true)
+namespace: "contextecf"
+createNamespace: true
+
+# -- Placement mode: "customer_network" for on-prem, "vendor_cloud" for RPaaS
+placement: "customer_network"
+
+# -- Service definitions (agent-enabled services)
+services:
+  api-gateway:
+    enabled: true
+    port: 8080
+    replicas: 2
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+      limits:
+        cpu: "1"
+        memory: "1Gi"
+
+  ecl-writer:
+    enabled: true
+    port: 8082
+    replicas: 2
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+      limits:
+        cpu: "1"
+        memory: "1Gi"
+
+  auth:
+    enabled: true
+    port: 8083
+    replicas: 2
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  directory:
+    enabled: true
+    port: 8084
+    replicas: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  entitlements:
+    enabled: true
+    port: 8085
+    replicas: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  audit:
+    enabled: true
+    port: 8086
+    replicas: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  policy:
+    enabled: true
+    port: 8087
+    replicas: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+# -- Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# -- Network ingress mode: "internal_only" | "private_link" | "public"
+ingress:
+  mode: "internal_only"
+  allowedCidrs: []
+  # -- TLS configuration for ingress
+  tls:
+    enabled: false
+    secretName: ""
+
+# -- Secret references (NEVER embed actual secret values)
+secrets:
+  database:
+    # -- Reference to the database connection string secret
+    connectionRef: "secretref:contextecf-db-url"
+  redis:
+    # -- Reference to the Redis connection string secret
+    connectionRef: "secretref:contextecf-redis-url"
+  jwt:
+    # -- Reference to the JWT signing secret
+    secretRef: "secretref:contextecf-jwt-secret"
+  kms:
+    # -- KMS/HSM key reference for encryption at rest
+    mode: "byok"
+    keyRef: "kmsref:contextecf-kms-key"
+
+# -- Agent API configuration
+agentApi:
+  enabled: true
+  authMode: "oauth_client_credentials"
+  requireOnBehalfOf: true
+  rateLimits:
+    contextPacksPerMinute: 60
+    actionsPerMinute: 10
+
+# -- Policy configuration
+policy:
+  dataAccess:
+    allowedSources:
+      - "m365"
+      - "salesforce"
+    redaction:
+      enabled: true
+  executeMode:
+    enabled: false
+    approvalRequired: true
+    humanConfirmation: true
+
+# -- Entitlements
+entitlements:
+  licenseRef: ""
+  ccu:
+    monthlyLimit: 50000
+    burstLimitPerHour: 2500
+  maxUsers: 100
+
+# -- Audit configuration
+audit:
+  enabled: true
+  retentionDays: 365
+
+# -- Health check configuration
+healthCheck:
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3

@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# ContextECF Fabric CLI — Starter Edition
+# Orchestration wrapper for managing the local Fabric environment.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="${SCRIPT_DIR}/engine/docker-compose.yml"
+ENV_FILE="${SCRIPT_DIR}/engine/.env"
+
+COMPOSE_CMD="docker compose -f ${COMPOSE_FILE}"
+if [ -f "$ENV_FILE" ]; then
+  COMPOSE_CMD="${COMPOSE_CMD} --env-file ${ENV_FILE}"
+fi
+
+usage() {
+  cat <<EOF
+ContextECF Fabric CLI — Starter Edition
+
+Usage: ./fabric <command> [options]
+
+Commands:
+  up              Start all Fabric services
+  down            Stop all Fabric services
+  pull            Pull latest images from registry
+  status          Show service status
+  logs [service]  Show logs (optionally for a specific service)
+  verify          Run health checks on all services
+  doctor          Check system prerequisites
+  request-license Generate a trial license request file
+  help            Show this help message
+
+Examples:
+  ./fabric up                 Start the Fabric
+  ./fabric logs api-gateway   View API gateway logs
+  ./fabric down               Stop everything
+EOF
+  exit 0
+}
+
+cmd_up() {
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "ERROR: engine/.env not found. Run ./install.sh first."
+    exit 1
+  fi
+  echo "Starting ContextECF Fabric..."
+  $COMPOSE_CMD up -d
+  echo ""
+  bash "${SCRIPT_DIR}/scripts/verify.sh"
+  echo ""
+  echo "Fabric is running."
+  echo "  API Gateway:    http://localhost:8080"
+  echo "  Admin Console:  http://localhost:3000"
+}
+
+cmd_down() {
+  echo "Stopping ContextECF Fabric..."
+  $COMPOSE_CMD down
+  echo "Fabric stopped."
+}
+
+cmd_pull() {
+  if [ -z "${REGISTRY_TOKEN:-}" ]; then
+    echo "ERROR: REGISTRY_TOKEN is not set."
+    echo "Set it with: export REGISTRY_TOKEN=<your-token>"
+    exit 1
+  fi
+  echo "Pulling latest images..."
+  $COMPOSE_CMD pull
+  echo "Pull complete."
+}
+
+cmd_status() {
+  $COMPOSE_CMD ps
+}
+
+cmd_logs() {
+  if [ $# -gt 0 ]; then
+    $COMPOSE_CMD logs -f "$1"
+  else
+    $COMPOSE_CMD logs -f --tail=50
+  fi
+}
+
+cmd_verify() {
+  bash "${SCRIPT_DIR}/scripts/verify.sh"
+}
+
+cmd_doctor() {
+  bash "${SCRIPT_DIR}/scripts/doctor.sh"
+}
+
+cmd_request_license() {
+  bash "${SCRIPT_DIR}/scripts/request-license.sh"
+}
+
+if [ $# -eq 0 ]; then
+  usage
+fi
+
+case "$1" in
+  up)              cmd_up ;;
+  down)            cmd_down ;;
+  pull)            cmd_pull ;;
+  status)          cmd_status ;;
+  logs)            shift; cmd_logs "$@" ;;
+  verify)          cmd_verify ;;
+  doctor)          cmd_doctor ;;
+  request-license) cmd_request_license ;;
+  help|--help|-h)  usage ;;
+  *)
+    echo "Unknown command: $1"
+    echo "Run './fabric help' for available commands."
+    exit 1
+    ;;
+esac

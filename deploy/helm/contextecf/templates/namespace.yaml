@@ -1,0 +1,8 @@
+{{- if .Values.createNamespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "contextecf.namespace" . }}
+  labels:
+    {{- include "contextecf.labels" . | nindent 4 }}
+{{- end }}

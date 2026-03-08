@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "network": {
+    "api_port": 8080,
+    "admin_port": 3000,
+    "allow_dev_mode": true
+  },
+  "license": {
+    "file_path": "/opt/fabric/manifests/license.jwt"
+  }
+}
