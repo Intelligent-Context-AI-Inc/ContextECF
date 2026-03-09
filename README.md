@@ -1,50 +1,53 @@
-# ContextECF — Enterprise Relationship Intelligence Infrastructure
+# ContextECF
 
-**ContextECF RPaaS** (Relationship Platform as a Service) provides enterprise relationship intelligence infrastructure that augments your CRM, creating and maintaining the **Enterprise Context Ledger (ECL)** — a new enterprise asset class.
+## Enterprise Context Fabric for AI Systems
 
-ContextECF is **infrastructure, not an app**. It sits alongside your CRM, captures relationship signals from email, calendar, and meetings, and makes that context available to your teams and AI agents through a structured API.
+ContextECF is an infrastructure platform that assembles enterprise context across systems and delivers it through deterministic APIs.
 
----
-
-## Why ContextECF
-
-| Problem | ContextECF Solution |
-|---------|---------------------|
-| CRM data decays within weeks | Continuous, automated context capture |
-| Relationship knowledge lives in people's heads | Enterprise Context Ledger — structured, queryable, auditable |
-| AI agents lack organizational memory | Memory API provides context to any LLM |
-| No single view of relationship health | Drift detection, episode formation, quality scoring |
-| Vendor lock-in on relationship data | **You own your data** — always exportable, never locked |
-
-## Core Principles
-
-1. **CRM is never replaced** — ContextECF augments, never competes
-2. **No autonomous outreach** — no impersonation, no scraping, no unsanctioned messages
-3. **Customers own their data** — read and export access is never blocked, even after license expiry
-4. **All intelligence is explainable** — no black-box scoring
-5. **Tenant isolation is mandatory** — cryptographic enforcement at every layer
+It enables AI systems, applications, and decision-makers to access the right context at the right moment.
 
 ---
 
-## Platform Architecture
+## The Problem
+
+Enterprise knowledge is fragmented.
+
+Critical information lives across dozens of systems: CRM, messaging platforms, email, documents, tickets, code repositories, and analytics platforms.
+
+Every AI assistant or application must repeatedly search these systems to reconstruct context. This leads to:
+
+- Incomplete answers
+- Hallucinations
+- High compute cost
+- Slow response times
+
+---
+
+## The Solution
+
+ContextECF introduces a new architectural layer: **The Enterprise Context Fabric**.
+
+Instead of searching systems for information on demand, ContextECF continuously assembles relevant context in advance. Applications retrieve ready-to-use context packages rather than raw data.
+
+---
+
+## Architecture Overview
+
+ContextECF operates as a context infrastructure layer between enterprise systems and applications.
 
 ```
-                    ┌──────────────────────────────────┐
-                    │         API Gateway (8080)        │
-                    │   JWT Auth · Rate Limiting · ACL  │
-                    └──────────┬───────────────────────┘
-                               │
-            ┌──────────────────┼──────────────────────┐
-            │                  │                      │
-     ┌──────▼──────┐   ┌──────▼──────┐   ┌───────────▼──────┐
-     │  ECL Writer  │   │   Search    │   │   Memory API     │
-     │ (Append-only)│   │  (Ambient)  │   │  (LLM Context)   │
-     └──────┬──────┘   └──────┬──────┘   └───────────┬──────┘
-            │                  │                      │
-     ┌──────▼──────────────────▼──────────────────────▼──────┐
-     │              Enterprise Context Ledger                 │
-     │     PostgreSQL 15 · RLS · Tenant Isolation · Audit     │
-     └───────────────────────────────────────────────────────┘
+Enterprise Systems
+CRM | Slack | Email | Docs | Tickets | Code | Meetings
+         ↓
+  Signal Ingestion
+         ↓
+  Context Assembly Engine
+         ↓
+  Context Ledger
+         ↓
+  Context APIs
+         ↓
+  Applications / AI Agents
 ```
 
 ### Services (36 microservices)
@@ -62,54 +65,64 @@ ContextECF is **infrastructure, not an app**. It sits alongside your CRM, captur
 
 ---
 
+## Key Capabilities
+
+### Context Assembly
+
+Combine signals across enterprise systems into structured context.
+
+### Deterministic Context APIs
+
+Retrieve context using predictable APIs designed for AI and applications.
+
+### Context Synthesis
+
+Generate briefs, summaries, and insight signals.
+
+### Policy-Governed Context
+
+Security and access policies are enforced across context objects.
+
+### Time-to-Context Reduction
+
+ContextECF dramatically reduces Time-to-Context, enabling faster decision making and AI responses.
+
+---
+
 ## Deployment Options
 
-### On-Premises (Self-Hosted)
+ContextECF can run in multiple environments.
 
-Deploy ContextECF inside your own infrastructure — data center, private VPC, or air-gapped environment. All data stays within your network boundary.
+| Deployment | Description |
+|------------|-------------|
+| **On-Premise** | Fully contained within your infrastructure |
+| **AWS** | Deploy within your VPC |
+| **GCP** | Deploy within your GCP project |
+| **Azure** | Deploy within your Azure tenant |
+| **Hybrid** | Combine on-prem and cloud environments |
 
 - **Phase 1**: Docker Compose (available now)
 - **Phase 2**: Helm chart for Kubernetes
 
 See the [On-Prem Deployment Guide](docs/on-prem-guide.md) for full instructions.
 
-### Cloud Marketplace
-
-Available on:
-- **Google Cloud Marketplace** — Cloud Run + Cloud SQL + Memorystore
-- **AWS Marketplace** — ECS/Fargate + RDS + ElastiCache
-- **Azure Marketplace** — Preview (feature-gated)
-
 ---
 
-## Quick Start (On-Prem Trial)
+## Quick Start
+
+```bash
+git clone https://github.com/Intelligent-Context-AI-Inc/ContextECF.git
+cd ContextECF/starter
+
+export REGISTRY_TOKEN=<token>
+./install.sh
+```
 
 ### Prerequisites
 
 - Docker Engine 20.10+ and Docker Compose v2+
 - 8 GB RAM minimum, 10 GB free disk
 - Trial credentials (sign up at [timetocontext.co/trial](https://timetocontext.co/trial))
-
-### Install
-
-```bash
-# 1. Clone or download the starter kit
-git clone https://github.com/Intelligent-Context-AI-Inc/ContextECF.git
-cd ContextECF/starter
-
-# 2. Set your registry credentials (provided after trial signup)
-export REGISTRY_TOKEN=<your-token>
-export REGISTRY=<your-registry-url>
-
-# 3. Run the one-command installer
-./install.sh
-```
-
-The installer will:
-- Verify your system meets minimum requirements
-- Authenticate with the container registry
-- Pull and start all required services
-- Run health verification
 
 ### Verify
 
@@ -167,15 +180,29 @@ ContextECF on-prem requires a license for write operations. To get a trial licen
 
 | Endpoint | Description |
 |----------|-------------|
-| `POST /v1/nce` | Create Normalized Context Event |
+| `POST /v1/nce` | Ingest Normalized Context Event |
 | `POST /v1/context/query` | Query context capsules |
 | `POST /v1/search` | Enterprise Ambient Search |
 | `GET /v1/accounts/:id/brief` | Account Brief |
-| `GET /v1/drift/signals` | Drift Signals |
-| `GET /v1/myooo/status` | MyOOO Continuity Status |
+| `GET /v1/drift/signals` | Context Drift Signals |
+| `GET /v1/myooo/status` | Continuity Status |
 | `POST /v1/synthesis/run` | BYO-LLM Synthesis |
 | `GET /health/live` | Liveness probe |
 | `GET /health/ready` | Readiness probe |
+
+---
+
+## Example Use Cases
+
+ContextECF enables a wide range of enterprise capabilities.
+
+| Use Case | Description |
+|----------|-------------|
+| **AI Copilots** | Provide copilots with rich enterprise context |
+| **Relationship Intelligence** | Understand the strength and history of relationships across an organization |
+| **Meeting Preparation** | Generate instant context briefs before meetings |
+| **Enterprise Search** | Search across context rather than across systems |
+| **Decision Intelligence** | Combine signals across systems to generate insights |
 
 ---
 
@@ -197,7 +224,7 @@ ContextECF on-prem requires a license for write operations. To get a trial licen
 
 ## Security
 
-ContextECF is built with security as a foundational property, not an afterthought:
+ContextECF is built with security as a foundational property:
 
 - **140 tenant isolation tests** covering every attack vector (JWT extraction, RLS, cache-key prefixing, ACL fail-closed, SSRF guards)
 - **Row-Level Security (RLS)** enforced at the database layer — tenant data is cryptographically isolated
@@ -217,6 +244,8 @@ ContextECF is built with security as a foundational property, not an afterthough
 | [Architecture Overview](docs/architecture.md) | Deployment topologies and data flow |
 | [Helm Chart Guide](docs/helm-guide.md) | Kubernetes deployment with Helm |
 | [API Overview](docs/api-overview.md) | API surface and authentication |
+| [Category Definition](docs/context-engineering/category-definition.md) | What is an Enterprise Context Fabric |
+| [Context Engineering Manifesto](docs/context-engineering/context-engineering-manifesto.md) | The missing layer in enterprise AI |
 
 ---
 
@@ -245,10 +274,18 @@ ContextECF is built with security as a foundational property, not an afterthough
 
 ---
 
+## Why ContextECF Exists
+
+Large language models are powerful. But they lack context.
+
+ContextECF provides the infrastructure layer that gives AI systems access to enterprise context safely and efficiently.
+
+---
+
 ## Support
 
-- **Trial support**: ash@intelligentcontext.ai
-- **Licensing**: ash@intelligentcontext.ai
+- **Contact**: ash@intelligentcontext.ai
+- **Phone**: (916) 753-7432
 - **Website**: [timetocontext.co](https://timetocontext.co)
 
 ---

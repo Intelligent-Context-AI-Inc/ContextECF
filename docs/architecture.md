@@ -1,5 +1,9 @@
 # ContextECF Architecture Overview
 
+ContextECF is an infrastructure layer that assembles governed enterprise context across systems and delivers it through deterministic APIs. This document describes the deployment architecture, service model, and provider abstractions that enable ContextECF to run on-premise, in AWS, GCP, Azure, or in hybrid configurations.
+
+---
+
 ## Deployment Planes
 
 ContextECF separates concerns into three planes:
@@ -10,8 +14,8 @@ ContextECF separates concerns into three planes:
 - Managed by ContextECF (SaaS) or by the customer (on-prem)
 
 **Data Plane**
-- Connectors ingest events, publish to the event bus, normalize, validate, and write to the ledger
-- Serves retrieval workloads (search, context queries, briefs)
+- Connectors ingest signals from enterprise systems, normalize them, and write to the Context Ledger
+- Serves context retrieval workloads (search, context queries, briefs, synthesis)
 
 **Customer-Owned Plane**
 - Optional integration boundary for BYO storage or BYO-LLM
@@ -40,7 +44,7 @@ Everything runs inside the customer's infrastructure. Connector runners and even
 | Plane | What It Stores | Ownership |
 |-------|---------------|-----------|
 | **Control Plane DB** | Tenants, users, connectors, marketplace entitlements, audit logs | ContextECF-managed |
-| **Customer Data Plane DB** | Normalized Context Events (NCEs), episodes, context pods, golden IDs, drift signals, feedback | Customer-owned |
+| **Context Data Plane DB** | Normalized Context Events (NCEs), episodes, context pods, golden IDs, drift signals, feedback | Customer-owned |
 
 Both databases enforce Row-Level Security (RLS) with `set_config('app.tenant_id', ...)` bound to the authenticated JWT. No query can access data outside its tenant boundary.
 

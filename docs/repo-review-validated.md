@@ -9,7 +9,7 @@ This repository was reviewed as a product and deployment package (not a full app
 
 ## 1) What ContextECF Is For
 
-Users can use ContextECF as relationship intelligence infrastructure that augments CRM by ingesting communication signals and exposing contextual APIs for teams/agents. It is explicitly positioned as infrastructure (RPaaS / Enterprise Context Ledger), not an end-user app.
+Users can use ContextECF as an Enterprise Context Fabric — an infrastructure layer that assembles governed enterprise context across systems (CRM, messaging, documents, operations tools) and delivers it through deterministic APIs for AI systems and enterprise applications.
 
 ---
 

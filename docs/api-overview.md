@@ -1,5 +1,9 @@
 # ContextECF API Overview
 
+ContextECF exposes deterministic APIs for ingesting enterprise signals, retrieving assembled context, and running synthesis. These APIs are designed for integration by AI systems, enterprise applications, and developer workflows.
+
+---
+
 ## Authentication
 
 All API requests require a valid JWT token in the `Authorization` header:
@@ -26,13 +30,13 @@ All endpoints are prefixed with `/v1/`.
 
 ## Core Endpoints
 
-### Context Events
+### Signal Ingestion
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `POST` | `/v1/nce` | Create a Normalized Context Event |
 
-Ingests relationship signals (emails sent/received, meetings scheduled, calendar events) into the Enterprise Context Ledger.
+Ingests enterprise signals (emails, meetings, calendar events, document activity, tickets) into the Context Ledger for assembly.
 
 ### Context Retrieval
 
@@ -42,20 +46,20 @@ Ingests relationship signals (emails sent/received, meetings scheduled, calendar
 | `GET` | `/v1/accounts/:id/brief` | Get account brief |
 | `POST` | `/v1/search` | Enterprise Ambient Search |
 
-### Relationship Intelligence
+### Context Signals
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/v1/drift/signals` | Get drift signals |
-| `GET` | `/v1/myooo/status` | MyOOO continuity status |
+| `GET` | `/v1/drift/signals` | Get context drift signals |
+| `GET` | `/v1/myooo/status` | Continuity status |
 
-### AI Integration
+### Context Synthesis
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `POST` | `/v1/synthesis/run` | BYO-LLM synthesis (Enterprise) |
 
-Allows customers to bring their own LLM and run synthesis against their context data. ContextECF never sends data to external AI services without explicit customer configuration.
+Allows customers to bring their own LLM and run synthesis against assembled context. ContextECF never sends data to external AI services without explicit customer configuration.
 
 ### Health Probes
 

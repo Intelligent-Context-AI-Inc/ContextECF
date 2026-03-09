@@ -1,76 +1,131 @@
-# Trial Landing Page Spec — timetocontext.co/trial
+# Trial Landing Page Spec
 
-> Lovable / builder instruction set for the trial signup page.
+**URL**: timetocontext.co/trial
 
 ---
 
 ## Page Purpose
 
-Convert visitors into on-prem trial users by collecting minimal info and delivering registry credentials + a license file so they can run ContextECF locally in under 5 minutes.
+Convert developers, architects, and enterprise teams into trial users of ContextECF by letting them deploy the Enterprise Context Fabric locally in minutes.
+
+The goal is to demonstrate that ContextECF can run entirely inside their infrastructure while assembling enterprise context across systems.
 
 ---
 
-## Page Structure
+## 1. Hero Section
 
-### 1. Hero Section
+**Headline**: ContextECF — The Enterprise Context Fabric for AI Systems
 
-**Headline**: "Try ContextECF — Relationship Intelligence for Your CRM"
+**Subheadline**: Deploy ContextECF on-premise or in your cloud and assemble real-time enterprise context across CRM, messaging, documents, and operational systems. Run the entire platform locally in under 5 minutes.
 
-**Subheadline**: "Deploy on your own infrastructure. Your data never leaves your network. Up and running in 5 minutes."
+**Supporting Line**: Your data never leaves your infrastructure.
 
-**CTA Button**: "Start Free Trial" (scrolls to form)
-
----
-
-### 2. What You Get (3 cards, icon + short text)
-
-| Card | Icon idea | Text |
-|------|-----------|------|
-| Full Platform | server/stack | All core services: ingestion, search, briefs, drift signals, synthesis |
-| Your Infrastructure | lock/shield | Runs on Docker Compose on your machine. Zero data leaves your network. |
-| 14-Day Trial | calendar | Full write access for 14 days. Read/export access never expires. |
+**Primary CTA**: "Start Free Trial" (scrolls to signup form)
 
 ---
 
-### 3. How It Works (numbered steps)
+## 2. The Problem Section
 
-1. **Sign up below** — get your registry token instantly via email
-2. **Clone and install** — one command: `./install.sh`
-3. **Integrate** — JWT-authenticated APIs for ingestion, search, and synthesis
+**Title**: AI systems fail when they lack context.
 
-Include a small code snippet block:
+**Copy**:
 
-```
+Enterprise knowledge is scattered across dozens of systems: CRM, Slack / Teams, email, documents, ticketing systems, code repositories, and operational tools.
+
+AI assistants and applications must search these systems repeatedly, resulting in:
+
+- Incomplete answers
+- Hallucinations
+- High token costs
+- Slow response times
+
+**Bridge Statement**: ContextECF solves this by assembling context before AI systems need it.
+
+---
+
+## 3. What ContextECF Does
+
+**Title**: The Context Infrastructure Layer
+
+**Description**: ContextECF continuously ingests signals from enterprise systems and assembles them into structured context packages that AI systems and applications can access instantly. Instead of searching for information, systems retrieve ready-to-use context.
+
+**Key Benefits**:
+
+| Capability | Description |
+|------------|-------------|
+| Context Assembly | Combines signals from CRM, documents, meetings, tickets, and messaging systems |
+| Deterministic APIs | Retrieve structured context in milliseconds |
+| Context Synthesis | Generate briefs, summaries, and insight signals |
+| Policy Governance | Enforce security and access controls across context |
+| Deploy Anywhere | Run on-premise or in your own cloud (AWS, GCP, Azure) |
+
+---
+
+## 4. What You Get in the Trial
+
+**Card 1 — Full Context Fabric**
+Run the complete ContextECF platform locally. Includes ingestion, context search, synthesis, and context drift signals.
+
+**Card 2 — Your Infrastructure**
+ContextECF runs entirely inside your network using Docker Compose. No enterprise data leaves your environment.
+
+**Card 3 — 14-Day Trial**
+Full read/write access for 14 days. After expiration you retain read and export access to your data.
+
+---
+
+## 5. How It Works
+
+**Step 1 — Sign Up**
+Register below and receive a container registry token and trial license.
+
+**Step 2 — Install**
+Clone the repository and run the install script.
+
+```bash
 git clone https://github.com/Intelligent-Context-AI-Inc/ContextECF.git
 cd ContextECF/starter
 export REGISTRY_TOKEN=<your-token>
 ./install.sh
 ```
 
+**Step 3 — Integrate**
+Use ContextECF APIs to ingest signals and retrieve assembled context. Endpoints include: ingestion, context search, synthesis, and briefs.
+
 ---
 
-### 4. Trial Signup Form
+## 6. Example Developer Workflow
+
+Developers typically start by connecting: CRM data, email metadata, meeting transcripts, and document signals.
+
+Within minutes ContextECF begins producing context briefs and relationship signals.
+
+---
+
+## 7. Trial Signup Form
 
 **Fields:**
 
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| Full Name | text | yes | |
-| Work Email | email | yes | Validate domain (reject gmail/yahoo/hotmail if desired) |
-| Company | text | yes | |
-| Role | dropdown | no | Options: Engineering, Product, RevOps, Security, Other |
-| Phone | tel | no | |
+| Field | Type | Required |
+|-------|------|----------|
+| Full Name | text | Yes |
+| Work Email | email | Yes |
+| Company | text | Yes |
+| Role | dropdown | No |
+| Phone | tel | No |
+
+Role dropdown options: Engineering, Platform, DevOps, Product, Security, Other
 
 **Submit Button**: "Get Trial Credentials"
 
 **Post-submit behavior:**
 - Show confirmation: "Check your email for registry credentials and setup instructions."
-- Send email to the address with: REGISTRY_TOKEN, REGISTRY URL, link to README quick-start, and a license.jwt attachment (or instructions to request one).
-- CC or notify ash@intelligentcontext.ai on every submission.
+- Send email to the address with: container registry token, registry URL, trial license file, and quick-start instructions.
+- Notify ash@intelligentcontext.ai on every submission.
 
 ---
 
-### 5. What Happens After Signup (below form, always visible)
+## 8. What Happens After Signup (below form, always visible)
 
 > **After you sign up, you'll receive:**
 > - A container registry token (REGISTRY_TOKEN)
@@ -82,31 +137,43 @@ export REGISTRY_TOKEN=<your-token>
 
 ---
 
-### 6. FAQ Section (collapsible)
+## 9. System Requirements
 
-**Q: What are the system requirements?**
-A: Docker Engine 20.10+, Docker Compose v2+, 8 GB RAM, 10 GB free disk. Works on macOS, Linux, and Windows (WSL2).
+- Docker Engine 20.10+
+- Docker Compose v2+
+- 8 GB RAM
+- 10 GB free disk
 
-**Q: Does any data leave my machine?**
-A: No. ContextECF runs entirely on your infrastructure. The only external call is pulling container images from our registry during install.
-
-**Q: What happens when the trial expires?**
-A: Write operations stop (HTTP 402). Read and export access to your data is never blocked — you always own your data.
-
-**Q: Can I connect to my CRM during the trial?**
-A: Yes. The trial includes the Connector Gateway and API endpoints for Salesforce, Gmail, and Calendar integration.
-
-**Q: Do I need Kubernetes?**
-A: Not for the trial. Docker Compose is all you need. Kubernetes/Helm deployment is available for production.
+Works on: macOS, Linux, Windows (WSL2)
 
 ---
 
-### 7. Footer
+## 10. FAQ (collapsible)
 
-- Link to [GitHub repo](https://github.com/Intelligent-Context-AI-Inc/ContextECF)
-- Link to [API docs](https://github.com/Intelligent-Context-AI-Inc/ContextECF/blob/main/docs/api-overview.md)
-- Contact: ash@intelligentcontext.ai | (916) 753-7432
-- "Copyright 2024-2026 Intelligent Context AI, Inc."
+**Q: Does any data leave my machine?**
+A: No. ContextECF runs entirely inside your infrastructure. The only external call is pulling container images from our registry during install.
+
+**Q: Do I need Kubernetes?**
+A: Not for the trial. Docker Compose is sufficient. Kubernetes deployment is available for production environments.
+
+**Q: What happens when the trial expires?**
+A: Write operations stop. Read and export access remain available. Your data always remains yours.
+
+**Q: What enterprise systems can I connect?**
+A: The trial includes connectors for CRM, email, calendar, and messaging systems via the Connector Gateway.
+
+---
+
+## 11. Footer
+
+**Links:**
+- [GitHub repository](https://github.com/Intelligent-Context-AI-Inc/ContextECF)
+- [API documentation](https://github.com/Intelligent-Context-AI-Inc/ContextECF/blob/main/docs/api-overview.md)
+
+**Contact:**
+ash@intelligentcontext.ai | (916) 753-7432
+
+Copyright 2024-2026 Intelligent Context AI, Inc.
 
 ---
 
@@ -117,7 +184,6 @@ A: Not for the trial. Docker Compose is all you need. Kubernetes/Helm deployment
 - Primary color: use brand palette from timetocontext.co.
 - Mobile responsive — form should work well on phone.
 - Page should load fast (no heavy JS frameworks needed; static is fine).
-- Consider adding a "Trusted by" or "Built for" section later once there are logos to show.
 
 ---
 

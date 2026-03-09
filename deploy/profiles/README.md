@@ -5,7 +5,7 @@ modes of ContextECF:
 
 | Profile     | File                  | Description                            |
 | ----------- | --------------------- | -------------------------------------- |
-| **RPaaS**   | `rpaas.env.template`  | Cloud-managed via GCP/AWS Marketplace  |
+| **Cloud**   | `rpaas.env.template`  | Cloud-managed via GCP/AWS Marketplace  |
 | **On-Prem** | `onprem.env.template` | Self-hosted in customer infrastructure |
 
 Docker Compose is the **Phase 1 on-prem installer artifact**. Helm charts are
@@ -32,7 +32,7 @@ deferred to Phase 2.
 
 Choose your profile based on the deployment target:
 
-- **RPaaS** (`rpaas.env.template`) -- Use when ContextECF is provisioned
+- **Cloud** (`rpaas.env.template`) -- Use when ContextECF is provisioned
   through Google Cloud Marketplace or AWS Marketplace. Infrastructure
   (database, cache, Pub/Sub, secrets) is managed by the cloud platform.
   License enforcement is disabled; billing flows through Stripe and the
@@ -45,7 +45,7 @@ Choose your profile based on the deployment target:
 To create your environment file, copy the template and fill in the values:
 
 ```bash
-# RPaaS
+# Cloud
 cp deploy/profiles/rpaas.env.template deploy/profiles/rpaas.env
 
 # On-Prem
