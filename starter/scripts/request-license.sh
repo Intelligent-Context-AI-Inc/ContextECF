@@ -47,7 +47,7 @@ EOF
 echo "License request generated: ${OUTPUT_FILE}"
 echo ""
 echo "Next steps:"
-echo "  1. Email this file to: licensing@contextecf.com"
+echo "  1. Email this file to: ash@intelligentcontext.ai"
 echo "  2. You will receive a license.jwt file"
 echo "  3. Place it in: manifests/license.jwt"
 echo "  4. Restart the Fabric: ./fabric down && ./fabric up"

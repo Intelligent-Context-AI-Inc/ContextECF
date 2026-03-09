@@ -88,7 +88,7 @@ Available on:
 
 - Docker Engine 20.10+ and Docker Compose v2+
 - 8 GB RAM minimum, 10 GB free disk
-- Trial credentials (sign up at [contextecf.com/trial](https://contextecf.com/trial))
+- Trial credentials (sign up at [timetocontext.co/trial](https://timetocontext.co/trial))
 
 ### Install
 
@@ -155,7 +155,7 @@ The `fabric` CLI manages your ContextECF environment:
 ContextECF on-prem requires a license for write operations. To get a trial license:
 
 1. Run `./fabric request-license`
-2. Send the generated `trial_request_*.json` to licensing@contextecf.com
+2. Send the generated `trial_request_*.json` to ash@intelligentcontext.ai
 3. Place the received `license.jwt` in `starter/manifests/`
 4. Restart: `./fabric down && ./fabric up`
 
@@ -247,9 +247,9 @@ ContextECF is built with security as a foundational property, not an afterthough
 
 ## Support
 
-- **Trial support**: support@contextecf.com
-- **Licensing**: licensing@contextecf.com
-- **Website**: [contextecf.com](https://contextecf.com)
+- **Trial support**: ash@intelligentcontext.ai
+- **Licensing**: ash@intelligentcontext.ai
+- **Website**: [timetocontext.co](https://timetocontext.co)
 
 ---
 
