@@ -57,7 +57,7 @@ if [ "$OFFLINE" = false ]; then
     echo "ERROR: REGISTRY_TOKEN is not set."
     echo ""
     echo "To obtain registry credentials, sign up for a trial at:"
-    echo "  https://contextecf.com/trial"
+    echo "  https://timetocontext.co/trial"
     echo ""
     echo "Then set: export REGISTRY_TOKEN=<your-token>"
     exit 1

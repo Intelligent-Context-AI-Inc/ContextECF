@@ -39,7 +39,7 @@ Deploy ContextECF inside your own infrastructure with full data sovereignty. All
 The Fabric Starter is a one-command installer for evaluation and trial deployments.
 
 ```bash
-# 1. Get your trial credentials at https://contextecf.com/trial
+# 1. Get your trial credentials at https://timetocontext.co/trial
 export REGISTRY_TOKEN=<your-token>
 export REGISTRY=<your-registry-url>
 
@@ -184,7 +184,7 @@ LOG_LEVEL=info
 ### Trial License
 
 1. Run `./fabric request-license` (or `bash scripts/request-license.sh`)
-2. Send the generated `trial_request_*.json` to licensing@contextecf.com
+2. Send the generated `trial_request_*.json` to ash@intelligentcontext.ai
 3. Place received `license.jwt` in `manifests/` (starter) or `license/` (production)
 4. Restart services
 
